@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <div>
+        <button type="button" class="btn btn-success" style="margin-top:30px;margin-bottom:30px" onclick="allpizzas()" >LIST ALL PIZZAS</button>
+
+        <form class="form-inline" method="GET" action="/api/pizzas">
+          <div class="form-group mx-sm-3 mb-2">
+            <input type="text" class="form-control" id="filter" placeholder="Type" name="title">
+          </div>
+          <div class="form-group mx-sm-3 mb-2">
+            <input type="text" class="form-control" id="flitersize" placeholder="Size" name="size">
+          </div>
+          <button type="submit" class="btn btn-primary mb-2">Filter</button>
+        </form>
+    </div>
+
+    <h2>Create Pizza</h2>
+
+    <select id="actiontype" class="form-control" oninput="actiontype()" style="width:160px" required>
+        <option selected>Create</option>
+        <option>Edit</option>
+          <option>Delete</option>
+      </select>
+    <br>
+    <div class="form-group" id="myid" style="display:none">
+      <label>Id:</label>
+      <input type="number" class="form-control" id="id" placeholder="Enter Id" name="id" required>
+    </div>
+    <div class="form-group" id="typediv">
+      <label>Type:</label>
+      <select id="type" class="form-control" name="type" oninput="change()" required>
+        <option selected>Choose...</option>
+        <option>Regular</option>
+          <option>Square</option>
+      </select>
+    </div>
+    <div class="form-group" id="sizediv">
+      <label>Size:</label>
+      <input type="text" class="form-control" id="size" placeholder="Enter Size" name="size" oninput="change()" required>
+    </div>
+    <div class="form-group" id="toppdiv">
+      <label>Toppings:</label>
+      <input type="text" class="form-control" id="topp" placeholder="Your Toppings" name="topp" oninput="change()" required>
+    </div>
+
+    <input type="hidden" class="form-control" id="details" name="details">
+    <button class="btn btn-default" onclick="submit()" id="mybtn">Create</button>
+    <br>
+    <br>
+    <b><div id="cretaed_Pizza" style="display:none; color:green "></div></b>
+</div>
+
+</body>
+<script type="text/javascript">
+
+    function submit(){
+        var details = document.getElementById("details");
+        var type = document.getElementById("type").value;
+        var size = document.getElementById("size").value;
+        var topp = document.getElementById("topp").value;
+        var actiontype = document.getElementById("actiontype").value;
+        var id = document.getElementById("id").value;
+
+
+
+        if(actiontype == "Create"){
+
+            if(type == "" || size == "" || topp == ""){
+                alert("fill all inputs");
+            }else{
+                details = {"title" : type , "size" : size, "toppings" : topp}
+                console.log("details", details);
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://127.0.0.1:8080/api/pizzas", true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(details));
+                document.getElementById("cretaed_Pizza").innerHTML = " Pizza Created as <br><br>  " + JSON.stringify(details);
+                document.getElementById("cretaed_Pizza").style.display = "block";
+            }
+        }else if(actiontype == "Edit"){
+            if(id == "" || type == "" || size == "" || topp == ""){
+                alert("fill all inputs");
+            }else{
+                details = {"title" : type , "size" : size, "toppings" : topp}
+                console.log("details", details);
+                var xhr = new XMLHttpRequest();
+                xhr.open("PUT", "http://127.0.0.1:8080/api/pizzas/" + id, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(details));
+                document.getElementById("cretaed_Pizza").innerHTML = "Pizza edited as <br><br>  " + JSON.stringify(details);
+                document.getElementById("cretaed_Pizza").style.display = "block";
+            }
+        }else if(actiontype == "Delete"){
+            if(id == ""){
+                alert("fill all inputs");
+            }else{
+                details = {"title" : type , "size" : size, "toppings" : topp}
+                console.log("details", details, "deleting");
+                var xhr = new XMLHttpRequest();
+                xhr.open("DELETE", "http://127.0.0.1:8080/api/pizzas/" + id, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function () {
+                   if (xhr.readyState === 4) {
+                      console.log(xhr.status);
+                      console.log(xhr.responseText);
+                   }};
+
+                xhr.send();
+                document.getElementById("cretaed_Pizza").innerHTML = "Pizza DELETED";
+                document.getElementById("cretaed_Pizza").style.display = "block";
+            }
+        }
+
+
+    }
+
+    function allpizzas(){
+        window.location.href = "http://127.0.0.1:8080/api/pizzas";
+    }
+
+    function actiontype(){
+        var actiontype = document.getElementById("actiontype").value;
+        if(actiontype == "Edit"){
+            document.getElementById("myid").style.display = "block";
+            document.getElementById("mybtn").innerHTML = "Edit";
+
+        }else if(actiontype == "Delete"){
+            document.getElementById("myid").style.display = "block";
+            document.getElementById("typediv").style.display = "none";
+            document.getElementById("sizediv").style.display = "none";
+            document.getElementById("toppdiv").style.display = "none";
+            document.getElementById("mybtn").innerHTML = "Delete";
+        }else if(actiontype == "Create"){
+               document.getElementById("myid").style.display = "none";
+               document.getElementById("mybtn").innerHTML = "Create";
+               document.getElementById("typediv").style.display = "block";
+                document.getElementById("sizediv").style.display = "block";
+                document.getElementById("toppdiv").style.display = "block";
+        }
+    }
+
+
+
+
+
+</script>
+</html>
