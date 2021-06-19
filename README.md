@@ -1,5 +1,3 @@
-
-
 ## Endpoints of API
 
 
@@ -32,7 +30,8 @@ Delete all pizzas [Method : DELETE]
 api/pizzas
 ```
 
-## ...How to create...
+## ...START PROJECT...
+
 ## Install Django REST framework
 
 
@@ -128,9 +127,8 @@ tutorials/serializers.py
 ## create urls.py of app as
 
 ```python
-/api/tutorials: GET, POST, DELETE
-/api/tutorials/:id: GET, PUT, DELETE
-/api/tutorials/published: GET
+tutorials/urls.py
+
 ```
 
 also add urls.py in main directory
